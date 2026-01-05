@@ -1,0 +1,25 @@
+{
+  "ratings": {
+    "stars": {
+      "label": "Ratings"
+    },
+    "home": {
+      "recommendationText": "Recommended Product!"
+    }
+  },
+  "ugc_carousel": {
+    "title": "How We Wear",
+    "subtitle": "See our products in action",
+    "loading": "Loading videos...",
+    "empty": "No videos available",
+    "error": "Failed to load videos",
+    "play": "Play video",
+    "pause": "Pause video",
+    "close": "Close video",
+    "previous": "Previous video",
+    "next": "Next video",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "shop": "Shop"
+  }
+}
