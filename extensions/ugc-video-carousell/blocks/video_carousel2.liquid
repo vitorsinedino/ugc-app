@@ -4,6 +4,13 @@
   with a right-side modal player when clicked
 {% endcomment %}
 
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+</style>
+<style>
+  @import url("https://use.typekit.net/lzl6trt.css");
+</style>
+
 <section
   class="ugc-carousel"
   data-section-id="{{ block.id }}"
@@ -16,7 +23,8 @@
         "title": {{ product.title | json }},
         "url": "{{ product.url }}",
         "price": {{ product.price | money | json }},
-        "image": {% if product.featured_image %}"{{ product.featured_image | image_url: width: 200 }}"{% else %}null{% endif %}
+        "image": {% if product.featured_image %}"{{ product.featured_image | image_url: width: 200 }}"{% else %}null{% endif %},
+        "available": {{ product.available | json }}
       }{% unless forloop.last %},{% endunless %}
     {%- endfor -%}
   ]'
@@ -168,13 +176,18 @@
     font-weight: 500;
     color: var(--ugc-text);
     margin: 0 0 4px 0;
+    font-family: 'Montserrat';
   }
 
   .ugc-carousel__subtitle {
     font-size: 14px;
-    color: var(--ugc-text);
-    opacity: 0.7;
+    color: black;
+    opacity: 1;
     margin: 0;
+    font-family: "scotch-display";
+    font-weight: 400;
+    font-style: italic;
+
   }
 
   .ugc-carousel__container {
@@ -232,6 +245,9 @@
     flex: 0 0 auto;
     width: var(--ugc-thumb-width);
     scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   /* Thumbnail Slides */
@@ -839,6 +855,21 @@
     outline-offset: 2px;
   }
 
+  .ugc-carousel__atc-btn{
+    background-color: black;
+    color: white;
+    font-family: 'Montserrat';
+    border-radius: 25px;
+    width: 80%;
+    padding: 8px;
+    margin: 10px auto;
+    outline: none;
+    border: none;
+    font-size: 10px;
+    text-decoration: none;
+    text-align: center;
+  }
+
   /* =========================================
      RESPONSIVE STYLES
      ========================================= */
@@ -1082,19 +1113,7 @@
             ${vid.duration ? `<span class="ugc-carousel__duration">${formatDuration(vid.duration)}</span>` : ''}
           </button>
           ${product ? `
-            <div class="ugc-carousel__product-card">
-              <img class="ugc-carousel__product-image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.title)}" width="48" height="48" loading="lazy">
-              <div class="ugc-carousel__product-info">
-                <p class="ugc-carousel__product-name">${escapeHtml(product.title)}</p>
-                <p class="ugc-carousel__product-price">${escapeHtml(product.price)}</p> 
-              </div>
-              <button class="ugc-carousel__add-btn" data-product-url="${escapeHtml(product.url)}" aria-label="Add to cart" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </button>
-            </div>
+            <a class="ugc-carousel__atc-btn" href="${escapeHtml(product.url)}">${product.available ? 'ADD TO CART' : 'PRE-ORDER'}</a>
           ` : ''}
         </div>
       `;
