@@ -22,6 +22,7 @@ interface UgcVideo {
   productId: string | null;
   sortOrder: number;
   isActive: boolean;
+  autoplay: boolean;
   createdAt: Date;
 }
 
@@ -50,6 +51,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const sourceAuthor = formData.get("sourceAuthor") as string;
     const sourceType = formData.get("sourceType") as string;
     const productId = formData.get("productId") as string;
+    const autoplay = formData.get("autoplay") === "true";
 
     const maxSort = await prisma.ugcVideo.aggregate({
       where: { shop: session.shop },
@@ -68,6 +70,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         sourceType: sourceType || null,
         productId: productId || null,
         sortOrder: (maxSort._max.sortOrder || 0) + 1,
+        autoplay,
       },
     });
 
@@ -291,6 +294,7 @@ export default function VideosPage() {
     sourceAuthor: "",
     sourceType: "TikTok",
     productId: "",
+    autoplay: false,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
@@ -416,6 +420,7 @@ export default function VideosPage() {
       sourceAuthor: "",
       sourceType: "TikTok",
       productId: "",
+      autoplay: false,
     });
     setSelectedFile(null);
     setUploadProgress(0);
@@ -611,6 +616,7 @@ export default function VideosPage() {
         submitData.append("sourceAuthor", formData.sourceAuthor);
         submitData.append("sourceType", formData.sourceType);
         submitData.append("productId", formData.productId);
+        submitData.append("autoplay", String(formData.autoplay));
 
         fetcher.submit(submitData, { method: "POST" });
         setUploading(false);
@@ -687,6 +693,7 @@ export default function VideosPage() {
     submitData.append("sourceAuthor", formData.sourceAuthor);
     submitData.append("sourceType", formData.sourceType);
     submitData.append("productId", formData.productId);
+    submitData.append("autoplay", String(formData.autoplay));
 
     fetcher.submit(submitData, { method: "POST" });
   };
@@ -1026,6 +1033,23 @@ export default function VideosPage() {
               }}
               placeholder="@username"
             />
+
+            <div style={{ marginTop: '12px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={formData.autoplay}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      autoplay: e.target.checked,
+                    }));
+                  }}
+                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                />
+                <span>Enable autoplay in modal</span>
+              </label>
+            </div>
           </s-stack>
 
           <s-stack slot="footer" direction="inline" gap="base" justifyContent="end">

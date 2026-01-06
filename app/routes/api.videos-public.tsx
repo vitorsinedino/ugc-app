@@ -31,6 +31,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         sourceAuthor: true,
         sourceType: true,
         productId: true,
+        autoplay: true,
       },
     });
 

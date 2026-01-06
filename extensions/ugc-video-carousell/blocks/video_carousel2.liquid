@@ -8,7 +8,7 @@
   class="ugc-carousel"
   data-section-id="{{ block.id }}"
   data-app-proxy-url="{{ shop.url }}/apps/ugc-videos"
-  data-dev-url="https://crucial-sometimes-hurricane-appreciation.trycloudflare.com/api/videos-public?shop={{ shop.domain }}"
+  data-dev-url="https://structure-ranking-downloadable-dare.trycloudflare.com/api/videos-public?shop={{ shop.domain }}"
   data-products='[
     {%- for product in block.settings.product_list -%}
       {
@@ -266,6 +266,15 @@
     border-radius: var(--ugc-border-radius);
   }
 
+  .ugc-carousel__inline-video {
+    width: 100%;
+    height: var(--ugc-thumb-height);
+    object-fit: cover;
+    display: block;
+    border-radius: var(--ugc-border-radius);
+    background: #000;
+  }
+
   .ugc-carousel__thumb-placeholder {
     width: 100%;
     height: var(--ugc-thumb-height);
@@ -318,7 +327,7 @@
   .ugc-carousel__product-info{
     flex: 1;
     min-width: 0;
-    padding-right: 8px;
+    padding-right: 12px;
   }
 
   .ugc-carousel__product-image{
@@ -335,12 +344,14 @@
     position: relative;
     margin-top: 8px;
     padding: 10px;
+    padding-right: 48px; 
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
     display: flex;
     align-items: center;
     gap: 10px;
+    min-height: 68px;
   }
 
   .ugc-carousel__product-name {
@@ -376,18 +387,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* transition: transform 0.2s ease, box-shadow 0.2s ease; */
     box-shadow: 0 2px 4px rgba(0, 191, 165, 0.3);
-  }
-
-  .ugc-carousel__add-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 3px 8px rgba(0, 191, 165, 0.4);
-  }
-
-  .ugc-carousel__add-btn:focus-visible {
-    outline: 2px solid #00bfa5;
-    outline-offset: 2px;
   }
 
   .ugc-carousel__add-btn svg {
@@ -1066,17 +1067,18 @@
             aria-label="Play video: ${escapeHtml(vid.title)}"
             type="button"
           >
-            ${vid.thumbnailUrl
-              ? `<img class="ugc-carousel__thumb" src="${vid.thumbnailUrl}" alt="${escapeHtml(vid.title)}" loading="lazy">`
-              : `<div class="ugc-carousel__thumb-placeholder">
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>`
-            }
-            <div class="ugc-carousel__play-icon">
+            <video
+              class="ugc-carousel__thumb ugc-carousel__inline-video"
+              data-video-index="${index}"
+              src="${vid.videoUrl}"
+              ${vid.autoplay ? 'autoplay' : ''}
+              muted
+              playsinline
+              poster="${vid.thumbnailUrl || ''}"
+            ></video>
+            ${!vid.autoplay ? `<div class="ugc-carousel__play-icon">
               <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </div>
+            </div>` : ''}
             ${vid.duration ? `<span class="ugc-carousel__duration">${formatDuration(vid.duration)}</span>` : ''}
           </button>
           ${product ? `
@@ -1101,17 +1103,9 @@
       // Show nav buttons if needed
       updateNavButtons();
 
-      // Add click listeners
-      track.querySelectorAll('.ugc-carousel__slide').forEach(slide => {
-        slide.addEventListener('click', () => {
-          openModal(parseInt(slide.dataset.index));
-        });
-      });
-
-      // Add click listeners to "+" buttons
       track.querySelectorAll('.ugc-carousel__add-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent opening modal
+          e.stopPropagation(); // Prevent video play/pause
           const productUrl = btn.dataset.productUrl;
           if (productUrl) {
             window.location.href = productUrl;
@@ -1119,13 +1113,79 @@
         });
       });
 
-      // Also allow clicking on the wrapper
-      track.querySelectorAll('.ugc-carousel__slide-wrapper').forEach((wrapper, index) => {
-        wrapper.addEventListener('click', (e) => {
-          if (e.target.closest('.ugc-carousel__slide')) return; // Already handled
-          if (e.target.closest('.ugc-carousel__add-btn')) return; // Button click handled separately
-          openModal(index);
+      setupInlineVideoAutoplay();
+    }
+
+    function setupInlineVideoAutoplay() {
+      const inlineVideos = track.querySelectorAll('.ugc-carousel__inline-video');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          const index = parseInt(video.dataset.videoIndex);
+          const videoData = videos[index];
+          
+          if (entry.isIntersecting && videoData.autoplay) {
+            video.play().catch(() => {
+              // Autoplay prevented by browser, that's ok
+            });
+          } else {
+            video.pause();
+          }
         });
+      }, {
+        root: track,
+        threshold: 0.5
+      });
+
+      inlineVideos.forEach(video => {
+        observer.observe(video);
+        
+        const index = parseInt(video.dataset.videoIndex);
+        const videoData = videos[index];
+        if (!videoData.autoplay) {
+          video.pause();
+        }
+        
+        // 4 second autoplay for videos with autoplay enabled
+        if (videoData.autoplay) {
+          video.addEventListener('timeupdate', function autoplayTimer() {
+            if (video.currentTime >= 4) {
+              video.pause();
+              video.currentTime = 0;
+            }
+          });
+          
+          // Reset when video starts playing again
+          video.addEventListener('play', () => {
+            if (videoData.autoplay && video.currentTime >= 4) {
+              video.currentTime = 0;
+            }
+          });
+        }
+        
+        // toggle play/pause on click
+        video.addEventListener('click', (e) => {
+          e.stopPropagation();
+          
+          if (video.paused) {
+            video.play();
+          } else {
+            video.pause();
+          }
+        });
+        
+        const slideButton = track.querySelector(`[data-index="${index}"]`);
+        if (slideButton) {
+          slideButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (video.paused) {
+              video.play();
+            } else {
+              video.pause();
+            }
+          });
+        }
       });
     }
 
@@ -1227,12 +1287,18 @@
 
       // Handle video load events
       video.oncanplay = () => {
-        video.play().then(() => {
-          playBtn.hidden = true;
-        }).catch((err) => {
-          console.log('Autoplay prevented:', err);
+        // Only autoplay if the video has autoplay enabled
+        if (videoData.autoplay) {
+          video.play().then(() => {
+            playBtn.hidden = true;
+          }).catch((err) => {
+            console.log('Autoplay prevented:', err);
+            playBtn.hidden = false;
+          });
+        } else {
+          // Autoplay is disabled for this video, show play button
           playBtn.hidden = false;
-        });
+        }
       };
 
       video.onerror = () => {

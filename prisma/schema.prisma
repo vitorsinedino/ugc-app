@@ -46,6 +46,7 @@ model UgcVideo {
   productId    String?   // Optional linked Shopify product ID
   sortOrder    Int       @default(0)
   isActive     Boolean   @default(true)
+  autoplay     Boolean   @default(false) // Whether video should autoplay in modal
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
