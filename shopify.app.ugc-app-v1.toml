@@ -2,7 +2,7 @@
 
 client_id = "a3980e4e8e0768825697140c0d9c81ff"
 name = "ugc-app-v1"
-application_url = "https://suggestions-rebate-strategic-median.trycloudflare.com"
+application_url = "https://destiny-correction-kde-something.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,9 +16,11 @@ api_version = "2026-01"
 scopes = "read_files,write_files,write_products"
 
 [auth]
-redirect_urls = [ "https://suggestions-rebate-strategic-median.trycloudflare.com/api/auth" ]
+redirect_urls = [
+  "https://destiny-correction-kde-something.trycloudflare.com/api/auth"
+]
 
 [app_proxy]
-url = "https://suggestions-rebate-strategic-median.trycloudflare.com/api/videos"
+url = "https://destiny-correction-kde-something.trycloudflare.com/api/videos"
 subpath = "ugc-videos"
 prefix = "apps"
