@@ -2,7 +2,7 @@
 
 client_id = "a3980e4e8e0768825697140c0d9c81ff"
 name = "ugc-app-v1"
-application_url = "https://officer-axis-lamp-broke.trycloudflare.com"
+application_url = "https://microphone-admission-taxation-travesti.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,10 +17,10 @@ scopes = "read_files,write_files,write_products"
 
 [auth]
 redirect_urls = [
-  "https://officer-axis-lamp-broke.trycloudflare.com/api/auth"
+  "https://microphone-admission-taxation-travesti.trycloudflare.com/api/auth"
 ]
 
 [app_proxy]
-url = "https://officer-axis-lamp-broke.trycloudflare.com/api/videos"
+url = "https://microphone-admission-taxation-travesti.trycloudflare.com/api/videos"
 subpath = "ugc-videos"
 prefix = "apps"
