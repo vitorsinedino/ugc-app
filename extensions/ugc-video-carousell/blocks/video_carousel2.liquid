@@ -14,8 +14,8 @@
 <section
   class="ugc-carousel"
   data-section-id="{{ block.id }}"
-  data-app-proxy-url="{{ shop.url }}/apps/ugc-videos"
-  data-dev-url="https://structure-ranking-downloadable-dare.trycloudflare.com/api/videos-public?shop={{ shop.domain }}"
+  data-app-proxy-url="https://officer-axis-lamp-broke.trycloudflare.com/api/videos"
+  data-shop="{{ shop.permanent_domain }}"
   data-products='[
     {%- for product in block.settings.product_list -%}
       {
@@ -95,7 +95,7 @@
           playsinline
           controlsList="nodownload"
         >
-          <source src="" type="video/mp4">
+          <!-- Source set dynamically via JavaScript -->
         </video>
 
         <!-- Video Header Overlay -->
@@ -133,7 +133,7 @@
 
     <!-- Product Card (optional) -->
     <div class="ugc-modal__product" data-product-card hidden>
-      <img class="ugc-modal__product-img" data-product-img src="" alt="" width="48" height="48" loading="lazy">
+      <img class="ugc-modal__product-img" data-product-img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" width="48" height="48" loading="lazy">
       <div class="ugc-modal__product-info">
         <h4 class="ugc-modal__product-name" data-product-name></h4>
         <p class="ugc-modal__product-price" data-product-price></p>
@@ -1021,12 +1021,12 @@
     const section = document.querySelector('[data-section-id="{{ block.id }}"]');
     if (!section) return;
 
-    // Use dev URL if available, otherwise use app proxy URL
-    const appProxyUrl = section.dataset.appProxyUrl;
-    const devUrl = section.dataset.devUrl;
-    const apiUrl = devUrl || appProxyUrl; // Prefer dev URL for testing
-    
+    const baseApiUrl = section.dataset.appProxyUrl;
+    const shopDomain = section.dataset.shop;
+    const apiUrl = `${baseApiUrl}?shop=${encodeURIComponent(shopDomain)}`;
+
     console.log('🔧 Using API URL:', apiUrl);
+    console.log('🏪 Shop domain:', shopDomain);
     
     const track = section.querySelector('[data-carousel-track]');
     const prevBtn = section.querySelector('[data-carousel-prev]');
@@ -1538,7 +1538,7 @@
     {
       "type": "product_list",
       "id": "product_list",
-      "label": "Product list for UGC videos",
+      "label": "Product list for UGC videos"
     },
     {
       "type": "header",

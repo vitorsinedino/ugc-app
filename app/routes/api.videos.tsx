@@ -1,34 +1,39 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
 // This route handles the App Proxy requests from the storefront
-// URL: /apps/ugc-videos or similar configured in shopify.app.toml
+// URL: /apps/ugc-videos
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  console.log('🔵 App Proxy request received:', request.url);
-  
+  console.log('========================================');
+  console.log('🔵 APP PROXY REQUEST');
+  console.log('🔵 URL:', request.url);
+
+  const url = new URL(request.url);
+  const shop = url.searchParams.get('shop');
+
+  console.log('🔵 Shop from query:', shop);
+  console.log('========================================');
+
+  if (!shop) {
+    console.log('🔴 No shop parameter');
+    return new Response(JSON.stringify({
+      error: "Missing shop parameter",
+      videos: []
+    }), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+
   try {
-    // Authenticate the app proxy request
-    const { session } = await authenticate.public.appProxy(request);
-    console.log('🟢 Session:', session);
+    console.log('🟡 Querying database for shop:', shop);
 
-    if (!session?.shop) {
-      console.log('🔴 No session or shop found');
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-    }
-
-    console.log('🟢 Shop:', session.shop);
-
-    // Fetch active videos for this shop
     const videos = await prisma.ugcVideo.findMany({
       where: {
-        shop: session.shop,
+        shop: shop,
         isActive: true,
       },
       orderBy: { sortOrder: "asc" },
@@ -42,6 +47,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         sourceAuthor: true,
         sourceType: true,
         productId: true,
+        autoplay: true,
       },
     });
 
@@ -52,14 +58,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "public, max-age=60", // Cache for 60 seconds
+        "Cache-Control": "public, max-age=60",
       },
     });
   } catch (error) {
-    console.error("🔴 Error in app proxy:", error);
-    return new Response(JSON.stringify({ 
-      error: "Internal server error",
-      message: error instanceof Error ? error.message : 'Unknown error'
+    console.error("🔴 Database error:", error);
+
+    return new Response(JSON.stringify({
+      error: "Database error",
+      message: error instanceof Error ? error.message : 'Unknown error',
+      videos: []
     }), {
       status: 500,
       headers: {

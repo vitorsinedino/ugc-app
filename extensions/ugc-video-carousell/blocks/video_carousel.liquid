@@ -7,7 +7,8 @@
 <section
   class="ugc-carousel"
   data-section-id="{{ block.id }}"
-  data-app-proxy-url="{{ shop.url }}/apps/ugc-videos"
+  data-app-proxy-url="https://officer-axis-lamp-broke.trycloudflare.com/api/videos"
+  data-shop="{{ shop.permanent_domain }}"
 >
   {% if block.settings.show_header %}
     <header class="ugc-carousel__header">
@@ -75,7 +76,7 @@
           playsinline
           controlsList="nodownload"
         >
-          <source src="" type="video/mp4">
+          <!-- Source set dynamically via JavaScript -->
         </video>
 
         <!-- Video Header Overlay -->
@@ -113,7 +114,7 @@
 
     <!-- Product Card (optional) -->
     <div class="ugc-modal__product" data-product-card hidden>
-      <img class="ugc-modal__product-img" data-product-img src="" alt="" width="48" height="48" loading="lazy">
+      <img class="ugc-modal__product-img" data-product-img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" width="48" height="48" loading="lazy">
       <div class="ugc-modal__product-info">
         <h4 class="ugc-modal__product-name" data-product-name></h4>
         <p class="ugc-modal__product-price" data-product-price></p>
@@ -888,7 +889,9 @@
     const section = document.querySelector('[data-section-id="{{ block.id }}"]');
     if (!section) return;
 
-    const appProxyUrl = section.dataset.appProxyUrl;
+    const baseApiUrl = section.dataset.appProxyUrl;
+    const shopDomain = section.dataset.shop;
+    const appProxyUrl = `${baseApiUrl}?shop=${encodeURIComponent(shopDomain)}`;
     const track = section.querySelector('[data-carousel-track]');
     const prevBtn = section.querySelector('[data-carousel-prev]');
     const nextBtn = section.querySelector('[data-carousel-next]');
