@@ -14,7 +14,7 @@
 <section
   class="ugc-carousel"
   data-section-id="{{ block.id }}"
-  data-app-proxy-url="https://microphone-admission-taxation-travesti.trycloudflare.com/api/videos"
+  data-app-proxy-url="https://pockets-marcus-baths-predicted.trycloudflare.com/api/videos"
   data-shop="{{ shop.permanent_domain }}"
   data-products='[
     {%- for product in block.settings.product_list -%}
@@ -873,6 +873,21 @@
   /* =========================================
      RESPONSIVE STYLES
      ========================================= */
+
+  
+  @media and screen (max-width: 800px) {
+    .ugc-carousel__container{
+      padding: 0;
+    }
+    .ugc-carousel__header{
+      padding: 0;
+    }
+  }
+
+  .ugc-carousel__atc-btn{
+      font-size: 7px;
+      padding: 4px;
+    }
 
   /* Mobile - Full screen modal */
   @media (max-width: 600px) {

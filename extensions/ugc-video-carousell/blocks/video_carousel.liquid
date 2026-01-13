@@ -7,7 +7,7 @@
 <section
   class="ugc-carousel"
   data-section-id="{{ block.id }}"
-  data-app-proxy-url="https://microphone-admission-taxation-travesti.trycloudflare.com/api/videos"
+  data-app-proxy-url="https://pockets-marcus-baths-predicted.trycloudflare.com/api/videos"
   data-shop="{{ shop.permanent_domain }}"
 >
   {% if block.settings.show_header %}
@@ -743,6 +743,16 @@
      ========================================= */
 
   /* Mobile - Full screen modal */
+
+  @media and screen (max-width: 800px) {
+    .ugc-carousel__container{
+      padding: 0;
+    }
+    .ugc-carousel__header{
+      padding: 0;
+    }
+  }
+
   @media (max-width: 600px) {
     .ugc-carousel {
       --ugc-thumb-width: {{ block.settings.thumbnail_width_mobile }}px;
@@ -750,6 +760,11 @@
 
     .ugc-carousel__nav {
       display: none;
+    }
+
+    .ugc-carousel__atc-btn{
+      font-size: 7px;
+      padding: 4px;
     }
 
     .ugc-modal__drawer {
